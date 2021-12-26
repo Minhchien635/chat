@@ -1,6 +1,5 @@
 package com.chat.controllers;
 
-import com.chat.socket.Server.ServerThread;
 import com.chat.utils.AlertUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;

@@ -1,6 +1,5 @@
 package com.chat.socket;
 
-import java.net.Socket;
 import java.util.ArrayList;
 
 public class DTO {

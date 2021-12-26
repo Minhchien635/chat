@@ -27,7 +27,7 @@ public class SendMessage implements Runnable {
                 System.out.println("Input from client: " + data);
                 jsonObject.clear();
                 //jsonObject.put("message", data);
-                out.write(data );
+                out.write(data);
                 out.newLine();
                 out.flush();
                 if (data.equals("bye"))

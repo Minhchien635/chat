@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class ServerThread implements Runnable {
-    BufferedReader in;
-    BufferedWriter out;
     private final Socket socket;
     private final DTO dataThread = new DTO();
+    BufferedReader in;
+    BufferedWriter out;
 
     public ServerThread(Socket s, String name) throws IOException {
         this.socket = s;
@@ -71,6 +71,19 @@ public class ServerThread implements Runnable {
                 if (data.myNickname != "" && data.myName == ""
                         && data.clientNickname == "" && data.clientName == ""
                         && data.message == "" && data.status == "") {
+
+                    if (checkExistedNickname(data.myNickname)) {
+                        jsonObject.clear();
+                        data.status = "nickname existed";
+                        jsonObject = convertStringToJson(dataThread.myNickname, "",
+                                dataThread.myName, "", data.status, data.message);
+
+                        this.out.write(jsonObject.toJSONString());
+                        this.out.newLine();
+                        this.out.flush();
+
+                        continue;
+                    }
 
                     dataThread.clientNickname = null;
 
@@ -228,7 +241,7 @@ public class ServerThread implements Runnable {
     }
 
     public JSONObject convertStringToJson(String myNickname, String clientNickname, String myName, String clientName,
-                                          String status, String message, ArrayList<String> arrRefuse) {
+                                          String status, String message) {
         JSONObject jsonObject = new JSONObject();
 
         jsonObject.put("myNickname", myNickname);
@@ -237,7 +250,6 @@ public class ServerThread implements Runnable {
         jsonObject.put("clientName", clientName);
         jsonObject.put("status", status);
         jsonObject.put("message", message);
-        jsonObject.put("arrRefuse", arrRefuse);
 
         return jsonObject;
     }
@@ -251,7 +263,6 @@ public class ServerThread implements Runnable {
         data.clientName = jsonObject.get("clientName").toString();
         data.status = jsonObject.get("status").toString();
         data.message = jsonObject.get("message").toString();
-        data.arrRefuse = new ArrayList<>();
 
         return data;
     }
@@ -260,7 +271,7 @@ public class ServerThread implements Runnable {
     public void sendClient(JSONObject jsonObject, ServerThread worker, DTO dataThread, DTO data) throws IOException {
         jsonObject.clear();
         jsonObject = convertStringToJson(worker.dataThread.myNickname, dataThread.myNickname,
-                worker.dataThread.myName, dataThread.myName, data.status, data.message, dataThread.arrRefuse);
+                worker.dataThread.myName, dataThread.myName, data.status, data.message);
 
         worker.out.write(jsonObject.toJSONString());
         worker.out.newLine();
@@ -271,21 +282,19 @@ public class ServerThread implements Runnable {
     public void sendClientCurr(JSONObject jsonObject, ServerThread worker, DTO dataThread, DTO data) throws IOException {
         jsonObject.clear();
         jsonObject = convertStringToJson(dataThread.myNickname, worker.dataThread.myNickname,
-                dataThread.myName, worker.dataThread.myName, data.status, data.message, dataThread.arrRefuse);
+                dataThread.myName, worker.dataThread.myName, data.status, data.message);
 
         this.out.write(jsonObject.toJSONString());
         this.out.newLine();
         this.out.flush();
     }
 
-    /*public static void main(String[] agrs) {
-        String a = "[dfds,dfsdf,34234,5645]";
-        System.out.println(convertStringToArr(a));
-    }*/
-
-    /*public ArrayList<String> convertStringToArr(String str) {
-        int index = str.length();
-        String[] arrStr = str.substring(1, index - 2).split(",");
-        return new ArrayList<>(List.of(arrStr));
-    }*/
+    public boolean checkExistedNickname(String nickname) {
+        for (ServerThread worker : Server.workers) {
+            if (nickname.equals(worker.dataThread.myNickname)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
