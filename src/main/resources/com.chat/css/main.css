@@ -1,0 +1,127 @@
+* {
+   -primary-color: #5664D2;
+   -primary-color-alpha-50: rgba(86, 100, 210, 0.5);
+   -primary-color-alpha-08: rgba(96, 100, 210, 0.08);
+   -primary-darker-color: #3241BB;
+   -secondary-color: #333645;
+   -secondary-darker-color: #21222C;
+   -danger-color: #FE6D6A;
+   -danger-darker-color: #FE2722;
+}
+
+.button {
+    -fx-cursor: hand;
+    -fx-min-width: 60;
+}
+
+.menu {
+    -fx-background-color: -secondary-color;
+    -fx-padding: 0;
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-padding: 4 8 4 16;
+    -fx-background-radius: 999 0 0 999;
+    -fx-cursor: hand;
+}
+
+.menu-button:hover {
+    -fx-background-color: -secondary-darker-color;
+}
+
+.menu-button.active {
+    -fx-background-color: white;
+    -fx-text-fill: -primary-color;
+}
+
+.action-button {
+    -fx-background-radius: 3;
+}
+
+.primary-button {
+    -fx-background-color: -primary-color;
+    -fx-text-fill: white;
+}
+
+.primary-button:hover {
+    -fx-background-color: -primary-darker-color;
+
+}
+
+.danger-button {
+    -fx-background-color: -danger-color;
+    -fx-text-fill: white;
+}
+
+.danger-button:hover {
+    -fx-background-color: -danger-darker-color;
+}
+
+.primary-outlined-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -primary-color;
+    -fx-background-radius: 0;
+    -fx-border-radius: 3;
+    -fx-border-color: -primary-color-alpha-50;
+}
+
+.primary-outlined-button:hover {
+    -fx-background-color: -primary-color-alpha-08;
+    -fx-border-color: -primary-color;
+}
+
+.form-group {
+    -fx-spacing: 4;
+}
+
+.table-action-buttons {
+    -fx-spacing: 12;
+}
+
+.form-group .combo-box:disabled {
+    -fx-opacity: 1;
+}
+
+.form-group .combo-box:disabled .list-cell, .date-picker:disabled {
+    -fx-background-color: white;
+    -fx-opacity: 1;
+    -fx-background-color:
+        linear-gradient(to bottom, derive(-fx-text-box-border, -10%), -fx-text-box-border),
+        linear-gradient(from 0px 0px to 0px 5px, derive(-fx-control-inner-background, -9%), -fx-control-inner-background);
+    -fx-background-insets: 1 0 1 1;
+    -fx-background-radius: 2 0 0 2;
+}
+
+.form-group .combo-box:disabled .arrow {
+    -fx-background-color: transparent;
+}
+
+.form-group .combo-box:disabled .arrow-button {
+    -fx-background-color:
+        linear-gradient(to bottom, derive(-fx-text-box-border, -10%), -fx-text-box-border),
+        linear-gradient(from 0px 0px to 0px 5px, derive(-fx-control-inner-background, -9%), -fx-control-inner-background);
+    -fx-background-insets: 1 1 1 0;
+    -fx-background-radius: 0 2 2 0;
+}
+
+.form-group .text-field:disabled,
+.form-group .text-area:disabled {
+    -fx-opacity: 1;
+}
+
+.text-area .scroll-pane {
+    -fx-background-radius: 2 2 2 2;
+}
+
+.text-area .scroll-pane .viewport {
+    -fx-background-radius: 2 2 2 2;
+}
+
+.text-area .scroll-pane .content {
+    -fx-background-radius: 2 2 2 2;
+}
+
+.primary-button .svg {
+    -fx-fill: white;
+}
