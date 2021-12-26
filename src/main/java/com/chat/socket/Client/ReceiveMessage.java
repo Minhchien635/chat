@@ -26,13 +26,17 @@ public class ReceiveMessage implements Runnable {
         try {
             while (true) {
                 String data = in.readLine();
+                if( data == null){
+                    break;
+                }
                 jsonObject = (JSONObject) parser.parse(data);
-
                 clientName = (String) jsonObject.get("clientName");
                 message = (String) jsonObject.get("message");
 
                 System.out.println("Receive: " + data);
             }
+            in.close();
+            socket.close();
         } catch (IOException | ParseException e) {
             System.out.println(e);
         }

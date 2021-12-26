@@ -75,14 +75,15 @@ public class ServerThread implements Runnable {
                     if (checkExistedNickname(data.myNickname)) {
                         jsonObject.clear();
                         data.status = "nickname existed";
-                        jsonObject = convertStringToJson(dataThread.myNickname, "",
-                                dataThread.myName, "", data.status, data.message);
+                        jsonObject = convertStringToJson(data.myNickname, "",
+                               "", "", data.status, data.message);
 
                         this.out.write(jsonObject.toJSONString());
                         this.out.newLine();
                         this.out.flush();
 
-                        continue;
+                        Server.workers.remove(this);
+                        break;
                     }
 
                     dataThread.clientNickname = null;
