@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -28,8 +27,7 @@ public class ChatRoomController {
         if (message.isEmpty()) {
             AlertUtils.showWarning("Chưa nhập tin nhắn");
             return;
-        }
-        else {
+        } else {
             HBox hBox = new HBox();
             hBox.setAlignment(Pos.CENTER_RIGHT);
             hBox.setPadding(new Insets(5, 5, 5, 10));

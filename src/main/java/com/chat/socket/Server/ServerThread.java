@@ -76,7 +76,7 @@ public class ServerThread implements Runnable {
                         jsonObject.clear();
                         data.status = "nickname existed";
                         jsonObject = convertStringToJson(data.myNickname, "",
-                               "", "", data.status, data.message);
+                                "", "", data.status, data.message);
 
                         this.out.write(jsonObject.toJSONString());
                         this.out.newLine();

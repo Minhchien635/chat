@@ -26,7 +26,7 @@ public class ReceiveMessage implements Runnable {
         try {
             while (true) {
                 String data = in.readLine();
-                if( data == null){
+                if (data == null) {
                     break;
                 }
                 jsonObject = (JSONObject) parser.parse(data);

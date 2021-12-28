@@ -17,6 +17,7 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/com.chat/fxml/chat-room.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 479, 432);
         stage.setTitle("Chat");
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
