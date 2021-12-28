@@ -125,3 +125,9 @@
 .primary-button .svg {
     -fx-fill: white;
 }
+
+.textflow {
+    -fx-color: white;
+    -fx-background-color: blue;
+    -fx-border-radius: 20px;
+}

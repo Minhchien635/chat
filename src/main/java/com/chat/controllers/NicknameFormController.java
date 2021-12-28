@@ -16,7 +16,8 @@ public class NicknameFormController {
             AlertUtils.showWarning("Hãy nhập nickname");
             return;
         }
-
-
+        else {
+            System.out.println(name);
+        }
     }
 }
