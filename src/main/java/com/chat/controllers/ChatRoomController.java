@@ -2,11 +2,12 @@ package com.chat.controllers;
 
 import com.chat.socket.Client.Client;
 import com.chat.utils.AlertUtils;
-import javafx.beans.value.ObservableValue;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -22,8 +23,12 @@ import java.util.ResourceBundle;
 public class ChatRoomController implements Initializable {
     @FXML
     private TextField tf_message;
+
     @FXML
     private VBox vbox_messages;
+
+    @FXML
+    private Label labelInfo;
 
     public Client client;
 
@@ -35,8 +40,13 @@ public class ChatRoomController implements Initializable {
                 while (true) {
                     try {
                         data = client.getRev().receive();
-                        String message;
-                        message = (String) data.get("message");
+                        String message = (String) data.get("message");
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                showMessage(message);
+                            }
+                        });
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -54,20 +64,7 @@ public class ChatRoomController implements Initializable {
             AlertUtils.showWarning("Hãy nhập tin nhắn");
             return;
         } else {
-            HBox hBox = new HBox();
-            hBox.setAlignment(Pos.CENTER_RIGHT);
-            hBox.setPadding(new Insets(5, 5, 5, 10));
-
-            Text text = new Text(message);
-            TextFlow textFlow = new TextFlow(text);
-
-            textFlow.setStyle("-fx-color: white;" + "-fx-background-color: rgb(0, 132, 255);" + "-fx-background-radius: 20px;");
-
-            textFlow.setPadding(new Insets(5, 10, 5, 10));
-            text.setFill(Color.color(0.934, 0.935, 0.996));
-
-            hBox.getChildren().add(textFlow);
-            vbox_messages.getChildren().add(hBox);
+            showMessage(message);
             tf_message.clear();
 
             data.put("message", message);
@@ -75,9 +72,30 @@ public class ChatRoomController implements Initializable {
         }
     }
 
+    public void showMessage(String message) {
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER_RIGHT);
+        hBox.setPadding(new Insets(5, 5, 5, 10));
+
+        Text text = new Text(message);
+        TextFlow textFlow = new TextFlow(text);
+
+        textFlow.setStyle("-fx-color: white;" + "-fx-background-color: rgb(0, 132, 255);" + "-fx-background-radius: 20px;");
+
+        textFlow.setPadding(new Insets(5, 10, 5, 10));
+        text.setFill(Color.color(0.934, 0.935, 0.996));
+
+        hBox.getChildren().add(textFlow);
+        vbox_messages.getChildren().add(hBox);
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        if (data.get("message") != "") {
+            showMessage(data.get("message").toString());
+        }
         data.put("status", "accepted");
+        labelInfo.setText("Bạn đang trò chuyện với " + data.get("clientNickname").toString());
         try {
             receive();
         } catch (IOException e) {
