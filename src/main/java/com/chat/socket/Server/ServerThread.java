@@ -37,9 +37,14 @@ public class ServerThread implements Runnable {
                     // 1 client dừng kết nối dừng kết nối
                     // Thông báo đến client kia
                     // Trả client kia vào danh sách đợi kết nối
+
+                    if (dataThread.clientName == null) {
+                        Server.workers.remove(this);
+                        System.out.println("ServerThead removed");
+                        break;
+                    }
                     for (ServerThread worker : Server.workers) {
                         if (dataThread.clientName.equals(worker.dataThread.myName)) {
-
                             DTO data = new DTO();
                             data.clientName = "";
                             data.myName = dataThread.clientName;
@@ -49,13 +54,9 @@ public class ServerThread implements Runnable {
                             data.message = "";
                             JSONObject jo = null;
                             sendClient(jo, worker, dataThread, data);
-
                             break;
                         }
                     }
-                    in.close();
-                    out.close();
-                    socket.close();
                     Server.workers.remove(this);
                     System.out.println("ServerThead removed");
                     break;
@@ -95,14 +96,15 @@ public class ServerThread implements Runnable {
                     ServerThread threadMaxRefuse = null;
                     for (ServerThread worker : Server.workers) {
                         int size = worker.dataThread.arrRefuse.size();
-                        if (size == Server.workers.size()) {
+                        if (size == (Server.workers.size() - 1)) {
                             threadMaxRefuse = worker;
                             break;
                         }
                     }
 
-                    // Ưu tiên chọn client đã từ chối tất cả các client khác có sẵn để gửi về client vừa kết nối đến server
-                    if (threadMaxRefuse != null) {
+                    // Ưu tiên chọn client đã từ chối tất cả các client khác có sẵn và không nằm trong
+                    // arrRefuse để gửi về client vừa kết nối đến server
+                    if (threadMaxRefuse != null && !threadMaxRefuse.dataThread.myName.equals(dataThread.myName)) {
                         dataThread.clientNickname = threadMaxRefuse.dataThread.myName;
 
                         threadMaxRefuse.dataThread.clientNickname = dataThread.myNickname;

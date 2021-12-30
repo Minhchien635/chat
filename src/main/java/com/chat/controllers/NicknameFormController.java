@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -21,6 +22,9 @@ public class NicknameFormController implements Initializable {
     @FXML
     private TextField nicknameTextField;
 
+    @FXML
+    private Button okButton;
+
     public Client client = new Client("localhost", 1234);
 
     public NicknameFormController() throws IOException {
@@ -30,10 +34,11 @@ public class NicknameFormController implements Initializable {
     public void onActionClick() throws IOException {
         String name = nicknameTextField.getText();
 
-        if (name.isEmpty()) {
+        if (name.trim().isEmpty()) {
             AlertUtils.showWarning("Hãy nhập nickname");
             return;
         }
+
         client.run();
 
         JSONObject jsonObject = new JSONObject();
@@ -46,9 +51,12 @@ public class NicknameFormController implements Initializable {
 
         client.getSend().sendData(jsonObject);
 
+        okButton.setDisable(true);
+
         JSONObject receive;
         while (true) {
             receive = client.getRev().receive();
+            System.out.println(receive.toString());
             if (receive.get("status").toString().equals("") && receive.get("clientName") != "") {
                 Alert alert = AlertUtils.alert(Alert.AlertType.CONFIRMATION, "Chấp nhận kết nối với " + receive.get("clientNickname"));
 
@@ -56,9 +64,11 @@ public class NicknameFormController implements Initializable {
                 if (!result.isPresent() || result.get() != ButtonType.OK) {
                     receive.put("status", "no accepted");
                     client.getSend().sendData(receive);
+                    continue;
                 } else {
                     receive.put("status", "ok");
                     client.getSend().sendData(receive);
+                    continue;
                 }
             }
             if (receive.get("status").toString().equals("client ok")) {
@@ -68,6 +78,7 @@ public class NicknameFormController implements Initializable {
                 if (!result.isPresent() || result.get() != ButtonType.OK) {
                     receive.put("status", "no accepted");
                     client.getSend().sendData(receive);
+                    continue;
                 } else {
                     receive.put("status", "accepted");
                     client.getSend().sendData(receive);
@@ -79,7 +90,7 @@ public class NicknameFormController implements Initializable {
                 break;
             }
         }
-        System.out.println("chat room");
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com.chat/fxml/chat_room.fxml"));
         ChatRoomController chatRoomController = new ChatRoomController();
         chatRoomController.client = client;

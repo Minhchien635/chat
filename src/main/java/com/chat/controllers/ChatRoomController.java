@@ -7,6 +7,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -18,6 +20,7 @@ import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ChatRoomController implements Initializable {
@@ -44,6 +47,21 @@ public class ChatRoomController implements Initializable {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
+                                String status = (String) data.get("status");
+                                if (status.equals("no connected")) {
+                                    Alert alert = AlertUtils.alert(Alert.AlertType.CONFIRMATION, "Đã mất kết nối. Bạn muốn tạo cuộc trò chuyện mới");
+
+                                    Optional<ButtonType> result = alert.showAndWait();
+                                    if (!result.isPresent() || result.get() != ButtonType.OK) {
+                                        data.put("status", "no accepted");
+                                        client.getSend().sendData(data);
+                                    } else {
+                                        data.put("myName","");
+                                        data.put("status", "");
+                                        client.getSend().sendData(data);
+                                    }
+                                }
+
                                 showMessage(message);
                             }
                         });

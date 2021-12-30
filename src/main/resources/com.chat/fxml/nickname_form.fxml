@@ -16,7 +16,7 @@
                 <TextField fx:id="nicknameTextField" prefHeight="24.0" prefWidth="222.0" promptText="\@abc..." />
             </children>
         </HBox>
-        <Button contentDisplay="RIGHT" defaultButton="true" mnemonicParsing="false" onAction="#onActionClick" prefWidth="63.0" text="Ok" textOverrun="CLIP">
+        <Button fx:id="okButton" contentDisplay="RIGHT" defaultButton="true" mnemonicParsing="false" onAction="#onActionClick" prefWidth="63.0" text="Ok" textOverrun="CLIP">
             <font>
                 <Font size="14.0" />
             </font>
