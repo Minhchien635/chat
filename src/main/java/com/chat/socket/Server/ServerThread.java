@@ -19,6 +19,7 @@ public class ServerThread implements Runnable {
     public ServerThread(Socket s, String name) throws IOException {
         this.socket = s;
         this.dataThread.myName = name;
+        this.dataThread.arrRefuse = new ArrayList<>();
         this.in = new BufferedReader(new InputStreamReader(s.getInputStream()));
         this.out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
     }
@@ -31,8 +32,8 @@ public class ServerThread implements Runnable {
             String input;
             while (true) {
                 input = in.readLine();
-
-                if (input.isEmpty()) {
+                System.out.println(input);
+                if (input == null) {
                     // 1 client dừng kết nối dừng kết nối
                     // Thông báo đến client kia
                     // Trả client kia vào danh sách đợi kết nối
@@ -46,7 +47,6 @@ public class ServerThread implements Runnable {
                             data.myNickname = dataThread.clientNickname;
                             data.status = "no connected";
                             data.message = "";
-                            data.arrRefuse = new ArrayList<>();
                             JSONObject jo = null;
                             sendClient(jo, worker, dataThread, data);
 

@@ -9,5 +9,5 @@ public class DTO {
     public String clientName;
     public String message;
     public String status;
-    public ArrayList<String> arrRefuse = new ArrayList<>();
+    public ArrayList<String> arrRefuse;
 }

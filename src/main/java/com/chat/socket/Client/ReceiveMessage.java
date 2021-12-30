@@ -17,28 +17,31 @@ public class ReceiveMessage implements Runnable {
         this.in = i;
     }
 
-    public void run() {
+    public void close() throws IOException {
+        in.close();
+        socket.close();
+    }
+
+    public JSONObject receive() throws IOException {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject;
-        String clientName;
-        String message;
-
         try {
-            while (true) {
-                String data = in.readLine();
-                if (data == null) {
-                    break;
-                }
-                jsonObject = (JSONObject) parser.parse(data);
-                clientName = (String) jsonObject.get("clientName");
-                message = (String) jsonObject.get("message");
-
-                System.out.println("Receive: " + data);
+            String data = in.readLine();
+            if (data == null) {
+                return null;
             }
-            in.close();
-            socket.close();
-        } catch (IOException | ParseException e) {
-            System.out.println(e);
+            jsonObject = (JSONObject) parser.parse(data);
+            System.out.println("Receive: " + data);
+
+            return jsonObject;
+        } catch (ParseException ex) {
+            ex.printStackTrace();
         }
+        return null;
+    }
+
+    @Override
+    public void run() {
+
     }
 }
