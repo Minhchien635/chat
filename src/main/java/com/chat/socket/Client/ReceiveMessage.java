@@ -17,11 +17,6 @@ public class ReceiveMessage implements Runnable {
         this.in = i;
     }
 
-    public void close() throws IOException {
-        in.close();
-        socket.close();
-    }
-
     public JSONObject receive() throws IOException {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject;
@@ -38,6 +33,11 @@ public class ReceiveMessage implements Runnable {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    public void close() throws IOException {
+        in.close();
+        socket.close();
     }
 
     @Override

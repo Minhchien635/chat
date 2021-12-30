@@ -56,13 +56,13 @@ public class ChatRoomController implements Initializable {
                                         data.put("status", "no accepted");
                                         client.getSend().sendData(data);
                                     } else {
-                                        data.put("myName","");
+                                        data.put("myName", "");
                                         data.put("status", "");
                                         client.getSend().sendData(data);
                                     }
                                 }
 
-                                showMessage(message);
+                                showMessage(message, "#e4e6eb", "black");
                             }
                         });
                     } catch (IOException e) {
@@ -82,7 +82,7 @@ public class ChatRoomController implements Initializable {
             AlertUtils.showWarning("Hãy nhập tin nhắn");
             return;
         } else {
-            showMessage(message);
+            showMessage(message, "rgb(0, 132, 255)", "white");
             tf_message.clear();
 
             data.put("message", message);
@@ -90,7 +90,7 @@ public class ChatRoomController implements Initializable {
         }
     }
 
-    public void showMessage(String message) {
+    public void showMessage(String message, String backgroundColor, String textColor) {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_RIGHT);
         hBox.setPadding(new Insets(5, 5, 5, 10));
@@ -98,7 +98,7 @@ public class ChatRoomController implements Initializable {
         Text text = new Text(message);
         TextFlow textFlow = new TextFlow(text);
 
-        textFlow.setStyle("-fx-color: white;" + "-fx-background-color: rgb(0, 132, 255);" + "-fx-background-radius: 20px;");
+        textFlow.setStyle("-fx-color: white; -fx-background-color: rgb(0, 132, 255); -fx-background-radius: 20px;");
 
         textFlow.setPadding(new Insets(5, 10, 5, 10));
         text.setFill(Color.color(0.934, 0.935, 0.996));
@@ -110,7 +110,7 @@ public class ChatRoomController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         if (data.get("message") != "") {
-            showMessage(data.get("message").toString());
+            showMessage(data.get("message").toString(), "rgb(0, 132, 255)", "white");
         }
         data.put("status", "accepted");
         labelInfo.setText("Bạn đang trò chuyện với " + data.get("clientNickname").toString());

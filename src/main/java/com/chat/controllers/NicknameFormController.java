@@ -32,22 +32,16 @@ public class NicknameFormController implements Initializable {
 
     @FXML
     public void onActionClick() throws IOException {
-        String name = nicknameTextField.getText();
+        String myNickname = nicknameTextField.getText();
 
-        if (name.trim().isEmpty()) {
+        if (myNickname.trim().isEmpty()) {
             AlertUtils.showWarning("Hãy nhập nickname");
             return;
         }
 
         client.run();
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("myNickname", name);
-        jsonObject.put("clientNickname", "");
-        jsonObject.put("myName", "");
-        jsonObject.put("clientName", "");
-        jsonObject.put("message", "");
-        jsonObject.put("status", "");
+        JSONObject jsonObject = convertDtoToJson(myNickname, "", "", "", "", "");
 
         client.getSend().sendData(jsonObject);
 
@@ -58,32 +52,56 @@ public class NicknameFormController implements Initializable {
             receive = client.getRev().receive();
             System.out.println(receive.toString());
             if (receive.get("status").toString().equals("") && receive.get("clientName") != "") {
+                System.out.println("trong sdk");
                 Alert alert = AlertUtils.alert(Alert.AlertType.CONFIRMATION, "Chấp nhận kết nối với " + receive.get("clientNickname"));
-
                 Optional<ButtonType> result = alert.showAndWait();
+
                 if (!result.isPresent() || result.get() != ButtonType.OK) {
                     receive.put("status", "no accepted");
                     client.getSend().sendData(receive);
                     continue;
-                } else {
-                    receive.put("status", "ok");
-                    client.getSend().sendData(receive);
-                    continue;
                 }
+                receive.put("status", "ok");
+                client.getSend().sendData(receive);
+                continue;
             }
+
+            if (receive.get("status").toString().equals("nickname existed")) {
+                okButton.setDisable(false);
+
+                AlertUtils.showWarning("Nickname đã tồn tại. Hãy nhập nickname khác");
+                client.close();
+                client = new Client("localhost", 1234);
+                return;
+            }
+
             if (receive.get("status").toString().equals("client ok")) {
                 Alert alert = AlertUtils.alert(Alert.AlertType.CONFIRMATION, "Chấp nhận kết nối với " + receive.get("clientNickname"));
 
                 Optional<ButtonType> result = alert.showAndWait();
                 if (!result.isPresent() || result.get() != ButtonType.OK) {
                     receive.put("status", "no accepted");
+                    System.out.println(receive);
                     client.getSend().sendData(receive);
                     continue;
-                } else {
-                    receive.put("status", "accepted");
-                    client.getSend().sendData(receive);
-                    break;
                 }
+                receive.put("status", "accepted");
+                client.getSend().sendData(receive);
+                break;
+            }
+
+            if (receive.get("status").toString().equals("no connected")) {
+                Alert alert = AlertUtils.alert(Alert.AlertType.CONFIRMATION, "Mất kết nối. Bạn muốn tạo kết nối mới với " + receive.get("clientNickname"));
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (!result.isPresent() || result.get() != ButtonType.OK) {
+                    receive.put("status", "no accepted");
+                    client.getSend().sendData(receive);
+                    continue;
+                }
+                receive.put("status", "ok");
+                client.getSend().sendData(receive);
+                break;
             }
 
             if (receive.get("status").toString().equals("accepted")) {
@@ -102,6 +120,18 @@ public class NicknameFormController implements Initializable {
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+    }
+
+    public JSONObject convertDtoToJson(String myNickname, String myName, String clientNickname, String clientName, String message, String status) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("myNickname", myNickname);
+        jsonObject.put("myName", myName);
+        jsonObject.put("clientNickname", clientNickname);
+        jsonObject.put("clientName", clientName);
+        jsonObject.put("message", message);
+        jsonObject.put("status", status);
+
+        return jsonObject;
     }
 
     @Override

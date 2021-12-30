@@ -27,6 +27,14 @@ public class Client {
         rev = new ReceiveMessage(socket, in);
     }
 
+    public void close() throws IOException {
+        socket.close();
+        in.close();
+        out.close();
+        send.close();
+        rev.close();
+    }
+
     public void run() throws IOException {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         executor.execute(send);

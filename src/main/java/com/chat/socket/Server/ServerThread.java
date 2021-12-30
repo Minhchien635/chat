@@ -26,7 +26,6 @@ public class ServerThread implements Runnable {
 
     public void run() {
         JSONParser parser = new JSONParser();
-        JSONObject jsonObject;
         System.out.println("Client " + socket.toString() + " accepted");
         try {
             String input;
@@ -38,22 +37,28 @@ public class ServerThread implements Runnable {
                     // Thông báo đến client kia
                     // Trả client kia vào danh sách đợi kết nối
 
-                    if (dataThread.clientName == null) {
+                    if (dataThread.clientName == "") {
                         Server.workers.remove(this);
-                        System.out.println("ServerThead removed");
+                        System.out.println("ServerThread removed");
                         break;
                     }
+
                     for (ServerThread worker : Server.workers) {
                         if (dataThread.clientName.equals(worker.dataThread.myName)) {
-                            DTO data = new DTO();
-                            data.clientName = "";
-                            data.myName = dataThread.clientName;
-                            data.clientNickname = "";
-                            data.myNickname = dataThread.clientNickname;
-                            data.status = "no connected";
-                            data.message = "";
-                            JSONObject jo = null;
-                            sendClient(jo, worker, dataThread, data);
+                            for (ServerThread worker1 : Server.workers) {
+                                if (!worker.dataThread.myName.equals(worker1.dataThread.myName) && worker1.dataThread.clientNickname == "" && !worker.dataThread.arrRefuse.contains(worker1.dataThread.myName)) {
+                                    DTO data = new DTO();
+                                    data.myNickname = worker.dataThread.myNickname;
+                                    data.myName = worker.dataThread.myName;
+                                    data.clientNickname = worker1.dataThread.myNickname;
+                                    data.clientName = worker1.dataThread.myName;
+                                    data.status = "no connected";
+                                    data.message = "";
+
+                                    sendClient(worker, dataThread, data);
+                                    break;
+                                }
+                            }
                             break;
                         }
                     }
@@ -63,21 +68,16 @@ public class ServerThread implements Runnable {
                 }
 
                 // Parser string về json
-                jsonObject = (JSONObject) parser.parse(input);
+                JSONObject jsonObject = (JSONObject) parser.parse(input);
 
                 // Lấy thông tin trong json bỏ vô DTO
                 DTO data = convertJsonToDTO(jsonObject);
 
                 // Client mới kết nối đến server
-                if (data.myNickname != "" && data.myName == ""
-                        && data.clientNickname == "" && data.clientName == ""
-                        && data.message == "" && data.status == "") {
-
+                if (data.myNickname != "" && data.status == "") {
                     if (checkExistedNickname(data.myNickname)) {
-                        jsonObject.clear();
                         data.status = "nickname existed";
-                        jsonObject = convertStringToJson(data.myNickname, "",
-                                "", "", data.status, data.message);
+                        jsonObject = convertDtoToJson(data.myNickname, "", "", "", data.status, "");
 
                         this.out.write(jsonObject.toJSONString());
                         this.out.newLine();
@@ -87,50 +87,23 @@ public class ServerThread implements Runnable {
                         break;
                     }
 
-                    dataThread.clientNickname = null;
-
-                    dataThread.clientName = null;
-
+                    dataThread.clientNickname = "";
+                    dataThread.clientName = "";
                     dataThread.myNickname = data.myNickname;
-
-                    ServerThread threadMaxRefuse = null;
-                    for (ServerThread worker : Server.workers) {
-                        int size = worker.dataThread.arrRefuse.size();
-                        if (size == (Server.workers.size() - 1)) {
-                            threadMaxRefuse = worker;
-                            break;
-                        }
-                    }
-
-                    // Ưu tiên chọn client đã từ chối tất cả các client khác có sẵn và không nằm trong
-                    // arrRefuse để gửi về client vừa kết nối đến server
-                    if (threadMaxRefuse != null && !threadMaxRefuse.dataThread.myName.equals(dataThread.myName)) {
-                        dataThread.clientNickname = threadMaxRefuse.dataThread.myName;
-
-                        threadMaxRefuse.dataThread.clientNickname = dataThread.myNickname;
-
-                        data.myName = dataThread.myName;
-
-                        sendClientCurr(jsonObject, threadMaxRefuse, dataThread, data);
-
-                        continue;
-                    }
 
                     //  Chọn 1 client chưa kết nối đến client nào để gửi về client mới
                     for (ServerThread worker : Server.workers) {
-                        if (!dataThread.myName.equals(worker.dataThread.myName) &&
-                                worker.dataThread.clientNickname == null &&
-                                !dataThread.arrRefuse.contains(worker.dataThread.myName)) {
+                        if (!dataThread.myName.equals(worker.dataThread.myName) && worker.dataThread.clientNickname == "" && !dataThread.arrRefuse.contains(worker.dataThread.myName)) {
 
                             dataThread.clientNickname = worker.dataThread.myName;
+                            dataThread.clientName = worker.dataThread.myName;
 
                             worker.dataThread.clientNickname = dataThread.myNickname;
+                            worker.dataThread.clientName = dataThread.myName;
 
                             data.myName = dataThread.myName;
-
                             // Gửi về client hiện tại
-                            sendClientCurr(jsonObject, worker, dataThread, data);
-
+                            sendClientCurr(worker, dataThread, data);
                             break;
                         }
                     }
@@ -139,15 +112,11 @@ public class ServerThread implements Runnable {
 
                 // Client mới ok
                 // Gửi đến client kia
-                if (data.myNickname != "" && data.myName != ""
-                        && data.clientNickname != "" && data.clientName != ""
-                        && data.message == "" && Objects.equals(data.status, "ok")) {
+                if (Objects.equals(data.status, "ok")) {
                     for (ServerThread worker : Server.workers) {
                         if (data.clientName.equals(worker.dataThread.myName)) {
                             data.status = "client ok";
-
-                            sendClient(jsonObject, worker, dataThread, data);
-
+                            sendClient(worker, dataThread, data);
                             break;
                         }
                     }
@@ -156,15 +125,11 @@ public class ServerThread implements Runnable {
 
                 // Client kia chấp nhận
                 // Gửi lại cho client mới
-                if (data.myNickname != "" && data.myName != ""
-                        && data.clientNickname != "" && data.clientName != ""
-                        && data.message == "" && Objects.equals(data.status, "client ok")) {
+                if (Objects.equals(data.status, "client ok")) {
                     for (ServerThread worker : Server.workers) {
                         if (data.clientName.equals(worker.dataThread.myName)) {
                             data.status = "accepted";
-
-                            sendClient(jsonObject, worker, dataThread, data);
-
+                            sendClient(worker, dataThread, data);
                             break;
                         }
                     }
@@ -173,14 +138,10 @@ public class ServerThread implements Runnable {
 
                 // Hoàn tất kết nối và gửi message
                 // Giữ status="accepted" để giữ kết nối giữa 2 client
-                if (data.myNickname != "" && data.myName != ""
-                        && data.clientNickname != "" && data.clientName != ""
-                        && data.message != "" && Objects.equals(data.status, "accepted")) {
+                if (Objects.equals(data.status, "accepted")) {
                     for (ServerThread worker : Server.workers) {
                         if (data.clientName.equals(worker.dataThread.myName)) {
-
-                            sendClient(jsonObject, worker, dataThread, data);
-
+                            sendClient(worker, dataThread, data);
                             break;
                         }
                     }
@@ -189,28 +150,32 @@ public class ServerThread implements Runnable {
 
                 // Client không chấp nhận
                 // Chọn client khác chưa kết nối với client nào để gửi qua client không chấp nhận kết nối
-                if (data.myNickname != "" && data.myName != ""
-                        && data.clientNickname != "" && data.clientName != ""
-                        && data.message == "" && Objects.equals(data.status, "no accepted")) {
-
+                if (Objects.equals(data.status, "no accepted")) {
                     // Gửi client khác về cho client đã ok nhưng client kia không chấp nhận và thêm vào danh sách từ chối
+                    String clientName = dataThread.clientName;
                     for (ServerThread worker : Server.workers) {
-                        if (data.clientName.equals(worker.dataThread.myName)) {
-                            worker.dataThread.clientNickname = null;
-                            dataThread.clientNickname = null;
-                            dataThread.arrRefuse.add(data.clientName);
+                        if (dataThread.clientName.equals(worker.dataThread.myName)) {
+
+                            worker.dataThread.clientNickname = "";
+                            worker.dataThread.clientName = "";
                             worker.dataThread.arrRefuse.add(dataThread.myName);
+
+                            dataThread.clientNickname = "";
+                            dataThread.clientName = "";
+                            dataThread.arrRefuse.add(worker.dataThread.myName);
+
                             for (ServerThread worker1 : Server.workers) {
-                                if (!worker.dataThread.myName.equals(worker1.dataThread.myName) &&
-                                        worker1.dataThread.clientNickname == null &&
-                                        !worker.dataThread.arrRefuse.contains(worker1.dataThread.myName)) {
-
-                                    worker.dataThread.clientNickname = worker1.dataThread.myName;
-
+                                if (!worker.dataThread.myName.equals(worker1.dataThread.myName) && worker1.dataThread.clientName.equals("") && !worker.dataThread.arrRefuse.contains(worker1.dataThread.myName)) {
+                                    worker.dataThread.clientNickname = worker1.dataThread.myNickname;
+                                    worker.dataThread.clientName = worker1.dataThread.myName;
                                     worker1.dataThread.clientNickname = worker.dataThread.myNickname;
+                                    worker1.dataThread.clientName = worker.dataThread.myName;
 
-                                    sendClient(jsonObject, worker, dataThread, data);
+                                    data.clientNickname = worker1.dataThread.myNickname;
+                                    data.clientName = worker1.dataThread.myName;
+                                    data.status = "";
 
+                                    sendClient(worker, worker1.dataThread, data);
                                     break;
                                 }
                             }
@@ -220,17 +185,20 @@ public class ServerThread implements Runnable {
 
                     // Gửi client khác về client đã không chấp nhận và thêm vào danh sách từ chối
                     for (ServerThread worker : Server.workers) {
-                        if (dataThread.arrRefuse.contains(worker.dataThread.myName) ||
-                                dataThread.myName.equals(worker.dataThread.myName) ||
-                                worker.dataThread.clientNickname != null) {
+                        if (dataThread.arrRefuse.contains(worker.dataThread.myName) || dataThread.myName.equals(worker.dataThread.myName) || worker.dataThread.clientName != "") {
                             continue;
                         }
+
                         dataThread.clientNickname = worker.dataThread.myNickname;
-
+                        dataThread.clientName = worker.dataThread.myName;
                         worker.dataThread.clientNickname = dataThread.myNickname;
+                        worker.dataThread.clientName = dataThread.myName;
 
-                        sendClientCurr(jsonObject, worker, dataThread, data);
+                        data.clientNickname = worker.dataThread.myNickname;
+                        data.clientName = worker.dataThread.myName;
+                        data.status = "";
 
+                        sendClientCurr(worker, dataThread, data);
                         break;
                     }
                 }
@@ -243,8 +211,7 @@ public class ServerThread implements Runnable {
         }
     }
 
-    public JSONObject convertStringToJson(String myNickname, String clientNickname, String myName, String clientName,
-                                          String status, String message) {
+    public JSONObject convertDtoToJson(String myNickname, String clientNickname, String myName, String clientName, String status, String message) {
         JSONObject jsonObject = new JSONObject();
 
         jsonObject.put("myNickname", myNickname);
@@ -271,10 +238,8 @@ public class ServerThread implements Runnable {
     }
 
     // Gửi về client kia
-    public void sendClient(JSONObject jsonObject, ServerThread worker, DTO dataThread, DTO data) throws IOException {
-        jsonObject.clear();
-        jsonObject = convertStringToJson(worker.dataThread.myNickname, dataThread.myNickname,
-                worker.dataThread.myName, dataThread.myName, data.status, data.message);
+    public void sendClient(ServerThread worker, DTO dataThread, DTO data) throws IOException {
+        JSONObject jsonObject = convertDtoToJson(worker.dataThread.myNickname, dataThread.myNickname, worker.dataThread.myName, dataThread.myName, data.status, data.message);
 
         worker.out.write(jsonObject.toJSONString());
         worker.out.newLine();
@@ -282,10 +247,8 @@ public class ServerThread implements Runnable {
     }
 
     // Gửi về client hiện tại
-    public void sendClientCurr(JSONObject jsonObject, ServerThread worker, DTO dataThread, DTO data) throws IOException {
-        jsonObject.clear();
-        jsonObject = convertStringToJson(dataThread.myNickname, worker.dataThread.myNickname,
-                dataThread.myName, worker.dataThread.myName, data.status, data.message);
+    public void sendClientCurr(ServerThread worker, DTO dataThread, DTO data) throws IOException {
+        JSONObject jsonObject = convertDtoToJson(dataThread.myNickname, worker.dataThread.myNickname, dataThread.myName, worker.dataThread.myName, data.status, data.message);
 
         this.out.write(jsonObject.toJSONString());
         this.out.newLine();
