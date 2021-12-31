@@ -13,9 +13,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
@@ -92,7 +95,7 @@ public class ChatRoomController implements Initializable {
                                     stageNicknameController.close();
                                 }
                             }
-                            showMessage(message, "#e4e6eb", "black");
+                            showMessageReceive(message, "#e4e6eb", "black");
                         });
                     } catch (IOException e) {
                         break;
@@ -103,6 +106,8 @@ public class ChatRoomController implements Initializable {
 
         thread.start();
     }
+
+
 
     public void onActionClick() {
         String message = tf_message.getText();
@@ -127,10 +132,32 @@ public class ChatRoomController implements Initializable {
         Text text = new Text(message);
         TextFlow textFlow = new TextFlow(text);
 
-        textFlow.setStyle("-fx-color: white; -fx-background-color: rgb(0, 132, 255); -fx-background-radius: 20px;");
+        textFlow.setStyle("-fx-color: " +textColor+ "; -fx-background-color: "+ backgroundColor + "; -fx-background-radius: 20px;");
 
         textFlow.setPadding(new Insets(5, 10, 5, 10));
         text.setFill(Color.color(0.934, 0.935, 0.996));
+
+        text.setFont(Font.font("Segoe UI Historic", 18));
+
+        hBox.getChildren().add(textFlow);
+        vbox_messages.getChildren().add(hBox);
+    }
+
+    public void showMessageReceive(String message, String backgroundColor, String textColor) {
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        hBox.setPadding(new Insets(5, 5, 5, 10));
+
+        Text text = new Text(message);
+        TextFlow textFlow = new TextFlow(text);
+
+        textFlow.setStyle("-fx-color: " +textColor+ "; -fx-background-color: "+ backgroundColor + "; -fx-background-radius: 20px;");
+
+        textFlow.setPadding(new Insets(5, 10, 5, 10));
+        text.setFill(Color.BLACK);
+
+        text.setFont(Font.font("Segoe UI Historic", 18));
+
 
         hBox.getChildren().add(textFlow);
         vbox_messages.getChildren().add(hBox);

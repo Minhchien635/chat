@@ -2,6 +2,7 @@ package com.chat.controllers;
 
 import com.chat.socket.Client.Client;
 import com.chat.utils.AlertUtils;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -10,6 +11,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 
@@ -29,8 +32,11 @@ public class NicknameFormController implements Initializable {
     public NicknameFormController() throws IOException {
     }
 
+
+
     @FXML
     public void onActionClick() throws IOException {
+
         String myNickname = nicknameTextField.getText();
 
         if (myNickname.trim().isEmpty()) {
