@@ -9,23 +9,32 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="468.0" prefWidth="479.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="483.0" prefWidth="479.0" style="-fx-padding: 7;" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <Label fx:id="labelInfo" style="-fx-label-padding: 7;">
-            <font>
-                <Font size="15.0" />
-            </font>
-        </Label>
+      <HBox alignment="CENTER" prefHeight="44.0" prefWidth="465.0">
+         <children>
+              <Label fx:id="labelClientName" prefHeight="33.0" prefWidth="239.5" style="-fx-label-padding: 7;">
+                  <font>
+                      <Font size="14.0" />
+                  </font>
+              </Label>
+            <Label fx:id="labelMyName" alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" prefHeight="33.0" prefWidth="235.0" style="-fx-label-padding: 7;">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
         <ScrollPane fx:id="sp_main" fitToWidth="true" prefHeight="395.0" prefWidth="479.0">
             <content>
-                <VBox fx:id="vbox_messages" prefHeight="457.0" prefWidth="416.0" />
+                <VBox fx:id="vbox_messages" prefHeight="385.0" prefWidth="463.0" />
             </content>
         </ScrollPane>
-        <HBox>
+        <HBox prefHeight="52.0" prefWidth="465.0" style="-fx-padding: 5; -fx-spacing: 4;">
             <children>
-                <TextField fx:id="tf_message" prefHeight="35.0" prefWidth="403.0" style="-fx-background-radius: 20px;" />
+                <TextField fx:id="tf_message" prefHeight="35.0" prefWidth="403.0" promptText="Aa" style="-fx-background-radius: 20px;" />
 
-                <Button fx:id="okButton" contentDisplay="RIGHT" defaultButton="true" mnemonicParsing="false" onAction="#onActionClick" prefHeight="39.0" prefWidth="76.0" text="Gửi" textOverrun="CLIP">
+                <Button fx:id="okButton" contentDisplay="RIGHT" defaultButton="true" mnemonicParsing="false" onAction="#onActionClick" prefHeight="39.0" prefWidth="76.0" style="-fx-background-radius: 20px;" text="Gửi" textOverrun="CLIP">
                     <font>
                         <Font size="14.0" />
                     </font>

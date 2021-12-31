@@ -9,12 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -31,15 +26,27 @@ import java.util.ResourceBundle;
 
 public class ChatRoomController implements Initializable {
     public Client client;
+
     public Stage stageNicknameController;
+
     public JSONObject data = new JSONObject();
+
     public NicknameFormController nicknameFormController;
+
     @FXML
     private TextField tf_message;
+
     @FXML
     private VBox vbox_messages;
+
     @FXML
-    private Label labelInfo;
+    private Label labelClientName;
+
+    @FXML
+    private ScrollPane sp_main;
+
+    @FXML
+    private Label labelMyName;
 
     public void receive() throws IOException {
         Thread thread = new Thread() {
@@ -108,7 +115,6 @@ public class ChatRoomController implements Initializable {
     }
 
 
-
     public void onActionClick() {
         String message = tf_message.getText();
 
@@ -132,15 +138,17 @@ public class ChatRoomController implements Initializable {
         Text text = new Text(message);
         TextFlow textFlow = new TextFlow(text);
 
-        textFlow.setStyle("-fx-color: " +textColor+ "; -fx-background-color: "+ backgroundColor + "; -fx-background-radius: 20px;");
+        textFlow.setStyle("-fx-color: " + textColor + "; -fx-background-color: " + backgroundColor + "; -fx-background-radius: 20px;");
 
         textFlow.setPadding(new Insets(5, 10, 5, 10));
         text.setFill(Color.color(0.934, 0.935, 0.996));
 
-        text.setFont(Font.font("Segoe UI Historic", 18));
+        text.setFont(Font.font("Segoe UI Historic", 15));
 
         hBox.getChildren().add(textFlow);
         vbox_messages.getChildren().add(hBox);
+        vbox_messages.heightProperty().addListener(observable -> sp_main.setVvalue(1D));
+        //sp_main.setVvalue(1D);
     }
 
     public void showMessageReceive(String message, String backgroundColor, String textColor) {
@@ -151,16 +159,18 @@ public class ChatRoomController implements Initializable {
         Text text = new Text(message);
         TextFlow textFlow = new TextFlow(text);
 
-        textFlow.setStyle("-fx-color: " +textColor+ "; -fx-background-color: "+ backgroundColor + "; -fx-background-radius: 20px;");
+        textFlow.setStyle("-fx-color: " + textColor + "; -fx-background-color: " + backgroundColor + "; -fx-background-radius: 20px;");
 
         textFlow.setPadding(new Insets(5, 10, 5, 10));
         text.setFill(Color.BLACK);
 
-        text.setFont(Font.font("Segoe UI Historic", 18));
+        text.setFont(Font.font("Segoe UI Historic", 15));
 
 
         hBox.getChildren().add(textFlow);
         vbox_messages.getChildren().add(hBox);
+        vbox_messages.heightProperty().addListener(observable -> sp_main.setVvalue(1D));
+        //sp_main.setVvalue(1D);
     }
 
     @Override
@@ -169,7 +179,8 @@ public class ChatRoomController implements Initializable {
             showMessage(data.get("message").toString(), "rgb(0, 132, 255)", "white");
         }
         data.put("status", "accepted");
-        labelInfo.setText("Bạn đang trò chuyện với " + data.get("clientNickname").toString());
+        labelClientName.setText(data.get("clientNickname").toString());
+        labelMyName.setText(data.get("myNickname").toString()+ " (Bạn)");
         try {
             receive();
         } catch (IOException e) {
