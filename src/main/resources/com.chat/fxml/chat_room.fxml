@@ -7,23 +7,22 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
-<VBox prefHeight="468.0" prefWidth="479.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="468.0" prefWidth="479.0" xmlns="http://javafx.com/javafx/17">
     <children>
-      <Label fx:id="labelInfo" style="-fx-label-padding: 7;">
-         <font>
-            <Font size="15.0" />
-         </font>
-      </Label>
+        <Label fx:id="labelInfo" style="-fx-label-padding: 7;">
+            <font>
+                <Font size="15.0"/>
+            </font>
+        </Label>
         <ScrollPane fx:id="sp_main" fitToWidth="true" prefHeight="395.0" prefWidth="479.0">
             <content>
-                <VBox fx:id="vbox_messages" prefHeight="457.0" prefWidth="416.0" />
+                <VBox fx:id="vbox_messages" prefHeight="457.0" prefWidth="416.0"/>
             </content>
         </ScrollPane>
         <HBox>
             <children>
-                <TextField fx:id="tf_message" prefHeight="35.0" prefWidth="403.0" />
-                <Button onAction="#onActionClick" prefHeight="36.0" prefWidth="80.0" text="Gửi" />
+                <TextField fx:id="tf_message" prefHeight="35.0" prefWidth="403.0"/>
+                <Button onAction="#onActionClick" prefHeight="36.0" prefWidth="80.0" text="Gửi"/>
             </children>
         </HBox>
     </children>

@@ -32,38 +32,13 @@ public class ServerThread implements Runnable {
             while (true) {
                 input = in.readLine();
                 System.out.println(input);
+
+                System.out.println("Tất cả thread: " + Server.workers.size());
+
                 if (input == null) {
-                    // 1 client dừng kết nối dừng kết nối
-                    // Thông báo đến client kia
-                    // Trả client kia vào danh sách đợi kết nối
-
-                    if (dataThread.clientName == "") {
-                        Server.workers.remove(this);
-                        System.out.println("ServerThread removed");
-                        break;
-                    }
-
-                    for (ServerThread worker : Server.workers) {
-                        if (dataThread.clientName.equals(worker.dataThread.myName)) {
-                            for (ServerThread worker1 : Server.workers) {
-                                if (!worker.dataThread.myName.equals(worker1.dataThread.myName) && worker1.dataThread.clientNickname == "" && !worker.dataThread.arrRefuse.contains(worker1.dataThread.myName)) {
-                                    DTO data = new DTO();
-                                    data.myNickname = worker.dataThread.myNickname;
-                                    data.myName = worker.dataThread.myName;
-                                    data.clientNickname = worker1.dataThread.myNickname;
-                                    data.clientName = worker1.dataThread.myName;
-                                    data.status = "no connected";
-                                    data.message = "";
-
-                                    sendClient(worker, dataThread, data);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                    }
+                    System.out.println("numThreadCurr: " + Server.workers.size());
                     Server.workers.remove(this);
-                    System.out.println("ServerThead removed");
+                    System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Server.workers.size());
                     break;
                 }
 
@@ -72,6 +47,38 @@ public class ServerThread implements Runnable {
 
                 // Lấy thông tin trong json bỏ vô DTO
                 DTO data = convertJsonToDTO(jsonObject);
+
+                if (data.status.equals("no connected")) {
+                    // 1 client dừng kết nối dừng kết nối
+                    // Thông báo đến client kia
+                    // Trả client kia vào danh sách đợi kết nối
+                    if (data.myName == "") {
+                        System.out.println("numThreadCurr: " + Server.workers.size());
+                        Server.workers.remove(this);
+                        System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Server.workers.size());
+                        break;
+                    }
+
+                    for (ServerThread worker : Server.workers) {
+                        if (dataThread.clientName.equals(worker.dataThread.myName)) {
+                            DTO data1 = new DTO();
+                            data1.myNickname = worker.dataThread.myNickname;
+                            data1.myName = worker.dataThread.myName;
+                            data1.clientNickname = data.myNickname;
+                            data1.clientName = "";
+                            data1.status = "no connected";
+                            data1.message = "";
+
+                            sendClient(worker, dataThread, data1);
+                            break;
+                        }
+                    }
+
+                    System.out.println("numThreadCurr: " + Server.workers.size());
+                    Server.workers.remove(this);
+                    System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Server.workers.size());
+                    break;
+                }
 
                 // Client mới kết nối đến server
                 if (data.myNickname != "" && data.status == "") {
@@ -83,7 +90,9 @@ public class ServerThread implements Runnable {
                         this.out.newLine();
                         this.out.flush();
 
+                        System.out.println("numThreadCurr: " + Server.workers.size());
                         Server.workers.remove(this);
+                        System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Server.workers.size());
                         break;
                     }
 
@@ -257,7 +266,7 @@ public class ServerThread implements Runnable {
 
     public boolean checkExistedNickname(String nickname) {
         for (ServerThread worker : Server.workers) {
-            if (nickname.equals(worker.dataThread.myNickname)) {
+            if (nickname.equals(worker.dataThread.myNickname) && !nickname.equals(this.dataThread.myNickname)) {
                 return true;
             }
         }

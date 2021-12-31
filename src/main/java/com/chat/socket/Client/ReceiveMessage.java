@@ -21,18 +21,17 @@ public class ReceiveMessage implements Runnable {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject;
         try {
-            String data = in.readLine();
-            if (data == null) {
+            if (socket.isClosed()) {
                 return null;
             }
+            String data = in.readLine();
             jsonObject = (JSONObject) parser.parse(data);
             System.out.println("Receive: " + data);
 
             return jsonObject;
         } catch (ParseException ex) {
-            ex.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public void close() throws IOException {

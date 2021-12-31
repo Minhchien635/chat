@@ -19,13 +19,12 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class NicknameFormController implements Initializable {
+    public Stage stageMain;
+    public Client client = new Client("localhost", 1234);
     @FXML
     private TextField nicknameTextField;
-
     @FXML
     private Button okButton;
-
-    public Client client = new Client("localhost", 1234);
 
     public NicknameFormController() throws IOException {
     }
@@ -110,16 +109,35 @@ public class NicknameFormController implements Initializable {
         }
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com.chat/fxml/chat_room.fxml"));
+        Stage stage = new Stage();
         ChatRoomController chatRoomController = new ChatRoomController();
         chatRoomController.client = client;
         chatRoomController.data = receive;
+        chatRoomController.stageNicknameController = stage;
+        chatRoomController.nicknameFormController = this;
         fxmlLoader.setController(chatRoomController);
         Scene scene = new Scene(fxmlLoader.load());
-        Stage stage = new Stage();
         stage.setTitle("Chat");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+        if (stageMain != null) {
+            stageMain.close();
+        }
+
+        JSONObject jo = convertDtoToJson("", receive.get("myName").toString(), "", "", "", "no connected");
+        stage.setOnCloseRequest(we -> {
+            client.getSend().sendData(jo);
+            try {
+                client.close();
+                stage.close();
+                if (stageMain != null) {
+                    stageMain.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public JSONObject convertDtoToJson(String myNickname, String myName, String clientNickname, String clientName, String message, String status) {

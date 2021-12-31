@@ -17,6 +17,7 @@ public class Main extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com.chat/fxml/nickname_form.fxml"));
         NicknameFormController controller = new NicknameFormController();
+        controller.stageMain = stage;
         fxmlLoader.setController(controller);
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Nickname");
