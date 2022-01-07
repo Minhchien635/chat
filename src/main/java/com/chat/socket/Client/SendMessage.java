@@ -25,7 +25,7 @@ public class SendMessage implements Runnable {
     }
 
     public void close() throws IOException {
-        System.out.println("Client closed connection");
+        System.out.println("Client closed send");
         out.close();
         socket.close();
     }

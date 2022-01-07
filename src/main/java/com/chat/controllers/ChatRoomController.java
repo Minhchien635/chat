@@ -49,7 +49,7 @@ public class ChatRoomController implements Initializable {
     private Label labelMyName;
 
     public void receive() throws IOException {
-        Thread thread = new Thread() {
+        new Thread() {
             public void run() {
                 while (true) {
                     try {
@@ -77,6 +77,7 @@ public class ChatRoomController implements Initializable {
                                 }
 
                                 if (!result.isPresent() || result.get() != ButtonType.OK) {
+                                    System.exit(0);
                                     return;
                                 } else {
                                     Stage stage1 = new Stage();
@@ -84,6 +85,7 @@ public class ChatRoomController implements Initializable {
                                     NicknameFormController controller = null;
                                     try {
                                         controller = new NicknameFormController();
+                                        controller.stageMain = stage1;
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }
@@ -109,9 +111,7 @@ public class ChatRoomController implements Initializable {
                     }
                 }
             }
-        };
-
-        thread.start();
+        }.start();
     }
 
 

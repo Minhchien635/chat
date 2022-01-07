@@ -35,6 +35,7 @@ public class ReceiveMessage implements Runnable {
     }
 
     public void close() throws IOException {
+        System.out.println("Client closed receive");
         in.close();
         socket.close();
     }

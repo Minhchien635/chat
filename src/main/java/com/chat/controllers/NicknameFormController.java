@@ -2,6 +2,8 @@ package com.chat.controllers;
 
 import com.chat.socket.Client.Client;
 import com.chat.utils.AlertUtils;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,8 +13,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 
@@ -23,20 +25,26 @@ import java.util.ResourceBundle;
 
 public class NicknameFormController implements Initializable {
     public Stage stageMain;
-    public Client client = new Client("localhost", 1234);
+
+    public Client client = new Client("localhost", 12345);
+
     @FXML
     private TextField nicknameTextField;
+
     @FXML
     private Button okButton;
+
+    @FXML
+    private VBox vbox;
+
+    @FXML
+    private StackPane stackPane;
 
     public NicknameFormController() throws IOException {
     }
 
-
-
     @FXML
     public void onActionClick() throws IOException {
-
         String myNickname = nicknameTextField.getText();
 
         if (myNickname.trim().isEmpty()) {
@@ -44,20 +52,23 @@ public class NicknameFormController implements Initializable {
             return;
         }
 
+        okButton.setDisable(true);
+
         client.run();
 
         JSONObject jsonObject = convertDtoToJson(myNickname, "", "", "", "", "");
 
         client.getSend().sendData(jsonObject);
 
-        okButton.setDisable(true);
-
-        JSONObject receive;
+        JSONObject receive = new JSONObject();
         while (true) {
-            receive = client.getRev().receive();
+            try {
+                receive = client.getRev().receive();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             System.out.println(receive.toString());
             if (receive.get("status").toString().equals("") && receive.get("clientName") != "") {
-                System.out.println("trong sdk");
                 Alert alert = AlertUtils.alert(Alert.AlertType.CONFIRMATION, "Chấp nhận kết nối với " + receive.get("clientNickname"));
                 Optional<ButtonType> result = alert.showAndWait();
 
@@ -75,8 +86,16 @@ public class NicknameFormController implements Initializable {
                 okButton.setDisable(false);
 
                 AlertUtils.showWarning("Nickname đã tồn tại. Hãy nhập nickname khác");
-                client.close();
-                client = new Client("localhost", 1234);
+                try {
+                    client.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    client = new Client("localhost", 12345);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return;
             }
 
@@ -95,20 +114,6 @@ public class NicknameFormController implements Initializable {
                 break;
             }
 
-            if (receive.get("status").toString().equals("no connected")) {
-                Alert alert = AlertUtils.alert(Alert.AlertType.CONFIRMATION, "Mất kết nối. Bạn muốn tạo kết nối mới với " + receive.get("clientNickname"));
-
-                Optional<ButtonType> result = alert.showAndWait();
-                if (!result.isPresent() || result.get() != ButtonType.OK) {
-                    receive.put("status", "no accepted");
-                    client.getSend().sendData(receive);
-                    continue;
-                }
-                receive.put("status", "ok");
-                client.getSend().sendData(receive);
-                break;
-            }
-
             if (receive.get("status").toString().equals("accepted")) {
                 break;
             }
@@ -122,7 +127,12 @@ public class NicknameFormController implements Initializable {
         chatRoomController.stageNicknameController = stage;
         chatRoomController.nicknameFormController = this;
         fxmlLoader.setController(chatRoomController);
-        Scene scene = new Scene(fxmlLoader.load());
+        Scene scene = null;
+        try {
+            scene = new Scene(fxmlLoader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         stage.setTitle("Chat");
         stage.setResizable(false);
         stage.setScene(scene);
@@ -140,6 +150,7 @@ public class NicknameFormController implements Initializable {
                 if (stageMain != null) {
                     stageMain.close();
                 }
+                System.exit(0);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -159,6 +170,5 @@ public class NicknameFormController implements Initializable {
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-    }
+    public void initialize(URL url, ResourceBundle resourceBundle) {}
 }

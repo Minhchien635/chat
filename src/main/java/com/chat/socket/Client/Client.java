@@ -35,7 +35,7 @@ public class Client {
         rev.close();
     }
 
-    public void run() throws IOException {
+    public void run() {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         executor.execute(send);
         executor.execute(rev);
