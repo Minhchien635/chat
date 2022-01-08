@@ -2,9 +2,6 @@ package com.chat.controllers;
 
 import com.chat.socket.Client.Client;
 import com.chat.utils.AlertUtils;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -60,6 +57,10 @@ public class NicknameFormController implements Initializable {
 
         client.getSend().sendData(jsonObject);
 
+        handleDataReceive();
+    }
+
+    public void handleDataReceive() {
         JSONObject receive = new JSONObject();
         while (true) {
             try {
@@ -140,8 +141,12 @@ public class NicknameFormController implements Initializable {
         if (stageMain != null) {
             stageMain.close();
         }
+        setOnCloseRequest(stage, receive.get("myName").toString());
+    }
 
-        JSONObject jo = convertDtoToJson("", receive.get("myName").toString(), "", "", "", "no connected");
+    public void setOnCloseRequest(Stage stage, String myName) {
+        JSONObject jo = convertDtoToJson("", myName, "", "", "", "no connected");
+
         stage.setOnCloseRequest(we -> {
             client.getSend().sendData(jo);
             try {
@@ -157,7 +162,8 @@ public class NicknameFormController implements Initializable {
         });
     }
 
-    public JSONObject convertDtoToJson(String myNickname, String myName, String clientNickname, String clientName, String message, String status) {
+    public JSONObject convertDtoToJson(String myNickname, String myName, String clientNickname,
+                                       String clientName, String message, String status) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("myNickname", myNickname);
         jsonObject.put("myName", myName);
@@ -170,5 +176,6 @@ public class NicknameFormController implements Initializable {
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {}
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+    }
 }

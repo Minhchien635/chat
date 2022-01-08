@@ -114,7 +114,6 @@ public class ChatRoomController implements Initializable {
         }.start();
     }
 
-
     public void onActionClick() {
         String message = tf_message.getText();
 
@@ -128,9 +127,10 @@ public class ChatRoomController implements Initializable {
             data.put("message", message);
             client.getSend().sendData(data);
         }
-    }
+        }
 
-    public void showMessage(String message, String backgroundColor, String textColor) {
+    public void showMessage(String message, String backgroundColor,
+                            String textColor) {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_RIGHT);
         hBox.setPadding(new Insets(5, 5, 5, 10));
@@ -151,7 +151,8 @@ public class ChatRoomController implements Initializable {
         //sp_main.setVvalue(1D);
     }
 
-    public void showMessageReceive(String message, String backgroundColor, String textColor) {
+    public void showMessageReceive(String message, String backgroundColor,
+                                   String textColor) {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_LEFT);
         hBox.setPadding(new Insets(5, 5, 5, 10));

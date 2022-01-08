@@ -220,7 +220,8 @@ public class ServerThread implements Runnable {
         }
     }
 
-    public JSONObject convertDtoToJson(String myNickname, String clientNickname, String myName, String clientName, String status, String message) {
+    public JSONObject convertDtoToJson(String myNickname, String clientNickname, String myName,
+                                       String clientName, String status, String message) {
         JSONObject jsonObject = new JSONObject();
 
         jsonObject.put("myNickname", myNickname);
