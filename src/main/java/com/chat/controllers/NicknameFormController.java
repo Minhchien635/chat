@@ -37,8 +37,7 @@ public class NicknameFormController implements Initializable {
     @FXML
     private StackPane stackPane;
 
-    public NicknameFormController() throws IOException {
-    }
+    public NicknameFormController() throws IOException {}
 
     @FXML
     public void onActionClick() throws IOException {
@@ -86,7 +85,7 @@ public class NicknameFormController implements Initializable {
             if (receive.get("status").toString().equals("nickname existed")) {
                 okButton.setDisable(false);
 
-                AlertUtils.showWarning("Nickname đã tồn tại. Hãy nhập nickname khác");
+                AlertUtils.showWarning("Nickname đã tồn tại trên hệ thống. Hãy nhập nickname khác");
                 try {
                     client.close();
                 } catch (IOException e) {
@@ -102,8 +101,8 @@ public class NicknameFormController implements Initializable {
 
             if (receive.get("status").toString().equals("client ok")) {
                 Alert alert = AlertUtils.alert(Alert.AlertType.CONFIRMATION, "Chấp nhận kết nối với " + receive.get("clientNickname"));
-
                 Optional<ButtonType> result = alert.showAndWait();
+
                 if (!result.isPresent() || result.get() != ButtonType.OK) {
                     receive.put("status", "no accepted");
                     System.out.println(receive);
@@ -162,9 +161,9 @@ public class NicknameFormController implements Initializable {
         });
     }
 
-    public JSONObject convertDtoToJson(String myNickname, String myName, String clientNickname,
-                                       String clientName, String message, String status) {
+    public JSONObject convertDtoToJson(String myNickname, String myName, String clientNickname, String clientName, String message, String status) {
         JSONObject jsonObject = new JSONObject();
+
         jsonObject.put("myNickname", myNickname);
         jsonObject.put("myName", myName);
         jsonObject.put("clientNickname", clientNickname);
@@ -176,6 +175,5 @@ public class NicknameFormController implements Initializable {
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-    }
+    public void initialize(URL url, ResourceBundle resourceBundle) {}
 }

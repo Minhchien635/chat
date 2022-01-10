@@ -62,9 +62,6 @@ public class ChatRoomController implements Initializable {
                             String status = (String) data.get("status");
                             if (status.equals("no connected")) {
                                 stageNicknameController.close();
-                                Alert alert = AlertUtils.alert(Alert.AlertType.CONFIRMATION, data.get("clientNickname") + " đã thoát khỏi chat. Bạn muốn tạo kết nối mới");
-
-                                Optional<ButtonType> result = alert.showAndWait();
 
                                 data.put("myNickname", "");
                                 data.put("myName", "");
@@ -76,10 +73,14 @@ public class ChatRoomController implements Initializable {
                                     e.printStackTrace();
                                 }
 
+                                Alert alert = AlertUtils.alert(Alert.AlertType.CONFIRMATION, data.get("clientNickname") + " đã thoát khỏi chat. Bạn muốn tạo kết nối mới");
+                                Optional<ButtonType> result = alert.showAndWait();
+
                                 if (!result.isPresent() || result.get() != ButtonType.OK) {
                                     System.exit(0);
                                     return;
                                 } else {
+                                    // Mở cửa sổ mới nhập nickname
                                     Stage stage1 = new Stage();
                                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com.chat/fxml/nickname_form.fxml"));
                                     NicknameFormController controller = null;
@@ -104,7 +105,7 @@ public class ChatRoomController implements Initializable {
                                     stageNicknameController.close();
                                 }
                             }
-                            showMessageReceive(message, "#e4e6eb", "black");
+                            showMessageReceive(message);
                         });
                     } catch (IOException e) {
                         break;
@@ -121,67 +122,58 @@ public class ChatRoomController implements Initializable {
             AlertUtils.showWarning("Hãy nhập tin nhắn");
             return;
         } else {
-            showMessage(message, "rgb(0, 132, 255)", "white");
+            showMessage(message);
             tf_message.clear();
 
             data.put("message", message);
             client.getSend().sendData(data);
         }
-        }
+    }
 
-    public void showMessage(String message, String backgroundColor,
-                            String textColor) {
+    public void showMessage(String message) {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_RIGHT);
         hBox.setPadding(new Insets(5, 5, 5, 10));
 
         Text text = new Text(message);
-        TextFlow textFlow = new TextFlow(text);
-
-        textFlow.setStyle("-fx-color: " + textColor + "; -fx-background-color: " + backgroundColor + "; -fx-background-radius: 20px;");
-
-        textFlow.setPadding(new Insets(5, 10, 5, 10));
         text.setFill(Color.color(0.934, 0.935, 0.996));
-
         text.setFont(Font.font("Segoe UI Historic", 15));
+
+        TextFlow textFlow = new TextFlow(text);
+        textFlow.getStyleClass().add("text-flow-show-message");
+        textFlow.setPadding(new Insets(5, 10, 5, 10));
 
         hBox.getChildren().add(textFlow);
         vbox_messages.getChildren().add(hBox);
         vbox_messages.heightProperty().addListener(observable -> sp_main.setVvalue(1D));
-        //sp_main.setVvalue(1D);
     }
 
-    public void showMessageReceive(String message, String backgroundColor,
-                                   String textColor) {
+    public void showMessageReceive(String message) {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_LEFT);
         hBox.setPadding(new Insets(5, 5, 5, 10));
 
         Text text = new Text(message);
-        TextFlow textFlow = new TextFlow(text);
-
-        textFlow.setStyle("-fx-color: " + textColor + "; -fx-background-color: " + backgroundColor + "; -fx-background-radius: 20px;");
-
-        textFlow.setPadding(new Insets(5, 10, 5, 10));
         text.setFill(Color.BLACK);
-
         text.setFont(Font.font("Segoe UI Historic", 15));
 
+        TextFlow textFlow = new TextFlow(text);
+        textFlow.getStyleClass().add("text-flow-show-message-receive");
+        textFlow.setPadding(new Insets(5, 10, 5, 10));
 
         hBox.getChildren().add(textFlow);
         vbox_messages.getChildren().add(hBox);
         vbox_messages.heightProperty().addListener(observable -> sp_main.setVvalue(1D));
-        //sp_main.setVvalue(1D);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         if (data.get("message") != "") {
-            showMessage(data.get("message").toString(), "rgb(0, 132, 255)", "white");
+            showMessage(data.get("message").toString());
         }
         data.put("status", "accepted");
         labelClientName.setText(data.get("clientNickname").toString());
-        labelMyName.setText(data.get("myNickname").toString()+ " (Bạn)");
+        labelMyName.setText(data.get("myNickname").toString() + " (Bạn)");
         try {
             receive();
         } catch (IOException e) {

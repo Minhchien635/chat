@@ -35,6 +35,7 @@ public class ServerThread implements Runnable {
 
                 System.out.println("Tất cả thread: " + Server.workers.size());
 
+                // Client buộc tắt cửa sổ nickname ("force quit")
                 if (input == null) {
                     System.out.println("numThreadCurr: " + Server.workers.size());
                     Server.workers.remove(this);
@@ -43,15 +44,14 @@ public class ServerThread implements Runnable {
                 }
 
                 // Parser string về json
+                // Convert json về DTO
                 JSONObject jsonObject = (JSONObject) parser.parse(input);
-
-                // Lấy thông tin trong json bỏ vô DTO
                 DTO data = convertJsonToDTO(jsonObject);
 
+                // Client dừng kết nối
                 if (data.status.equals("no connected")) {
-                    // 1 client dừng kết nối dừng kết nối
-                    // Thông báo đến client kia
-                    // Trả client kia vào danh sách đợi kết nối
+
+                    // Client không chấp nhận tạo kết nối mới
                     if (data.myName == "") {
                         System.out.println("numThreadCurr: " + Server.workers.size());
                         Server.workers.remove(this);
@@ -59,6 +59,7 @@ public class ServerThread implements Runnable {
                         break;
                     }
 
+                    // Gửi thông tin 1 client ko kết nối về client kia
                     for (ServerThread worker : Server.workers) {
                         if (dataThread.clientName.equals(worker.dataThread.myName)) {
                             DTO data1 = new DTO();
@@ -74,6 +75,7 @@ public class ServerThread implements Runnable {
                         }
                     }
 
+                    // Hủy thread hiện tại
                     System.out.println("numThreadCurr: " + Server.workers.size());
                     Server.workers.remove(this);
                     System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Server.workers.size());
@@ -120,7 +122,7 @@ public class ServerThread implements Runnable {
                 }
 
                 // Client mới ok
-                // Gửi đến client kia
+                // Gửi đến client kia (chờ kết nối)
                 if (Objects.equals(data.status, "ok")) {
                     for (ServerThread worker : Server.workers) {
                         if (data.clientName.equals(worker.dataThread.myName)) {
@@ -132,8 +134,9 @@ public class ServerThread implements Runnable {
                     continue;
                 }
 
-                // Client kia chấp nhận
+                // Client kia (chờ kết nối) chấp nhận
                 // Gửi lại cho client mới
+                // Hoàn tất kết nối
                 if (Objects.equals(data.status, "client ok")) {
                     for (ServerThread worker : Server.workers) {
                         if (data.clientName.equals(worker.dataThread.myName)) {
@@ -145,7 +148,7 @@ public class ServerThread implements Runnable {
                     continue;
                 }
 
-                // Hoàn tất kết nối và gửi message
+                // Truyền data
                 // Giữ status="accepted" để giữ kết nối giữa 2 client
                 if (Objects.equals(data.status, "accepted")) {
                     for (ServerThread worker : Server.workers) {
@@ -159,9 +162,9 @@ public class ServerThread implements Runnable {
 
                 // Client không chấp nhận
                 // Chọn client khác chưa kết nối với client nào để gửi qua client không chấp nhận kết nối
+                // Chọn client khác chưa kết nối với client nào để gửi qua client đã không được chấp nhận kết nối
                 if (Objects.equals(data.status, "no accepted")) {
                     // Gửi client khác về cho client đã ok nhưng client kia không chấp nhận và thêm vào danh sách từ chối
-                    String clientName = dataThread.clientName;
                     for (ServerThread worker : Server.workers) {
                         if (dataThread.clientName.equals(worker.dataThread.myName)) {
 
@@ -220,8 +223,7 @@ public class ServerThread implements Runnable {
         }
     }
 
-    public JSONObject convertDtoToJson(String myNickname, String clientNickname, String myName,
-                                       String clientName, String status, String message) {
+    public JSONObject convertDtoToJson(String myNickname, String clientNickname, String myName, String clientName, String status, String message) {
         JSONObject jsonObject = new JSONObject();
 
         jsonObject.put("myNickname", myNickname);
@@ -265,6 +267,7 @@ public class ServerThread implements Runnable {
         this.out.flush();
     }
 
+    // Kiểm tra nickname tồn tại
     public boolean checkExistedNickname(String nickname) {
         for (ServerThread worker : Server.workers) {
             if (nickname.equals(worker.dataThread.myNickname) && !nickname.equals(this.dataThread.myNickname)) {
