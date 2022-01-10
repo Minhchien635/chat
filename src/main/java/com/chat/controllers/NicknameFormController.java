@@ -86,7 +86,7 @@ public class NicknameFormController implements Initializable {
             if (receive.get("status").toString().equals("nickname existed")) {
                 okButton.setDisable(false);
 
-                AlertUtils.showWarning("Nickname đã tồn tại. Hãy nhập nickname khác");
+                AlertUtils.showWarning("Nickname đã tồn tại trên hệ thống. Hãy nhập nickname khác");
                 try {
                     client.close();
                 } catch (IOException e) {
@@ -176,6 +176,5 @@ public class NicknameFormController implements Initializable {
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-    }
+    public void initialize(URL url, ResourceBundle resourceBundle) {}
 }
