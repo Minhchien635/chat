@@ -56,8 +56,6 @@ public class ChatRoomController implements Initializable {
                         }
                         data = client.getRev().receive();
 
-                        if (data == null) break;
-
                         String message = (String) data.get("message");
                         Platform.runLater(() -> {
                             String status = (String) data.get("status");
