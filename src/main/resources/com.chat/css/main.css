@@ -147,3 +147,40 @@
     -fx-background-color: #e4e6eb;
     -fx-background-radius: 20px;
 }
+
+.text-flow-show-message-receive-pre {
+     -fx-color: black;
+     -fx-background-color: #e4e6eb;
+     -fx-background-radius: 20px 20px 20px 5px;
+}
+
+.text-flow-show-message-receive-curr {
+     -fx-color: black;
+     -fx-background-color: #e4e6eb;
+     -fx-background-radius: 5px 20px 20px 20px;
+}
+
+.text-flow-show-message-receive-between {
+     -fx-color: black;
+     -fx-background-color: #e4e6eb;
+     -fx-background-radius: 5px 20px 20px 5px;
+}
+
+
+.text-flow-show-message-pre {
+     -fx-color: white;
+     -fx-background-color: rgb(0, 132, 255);
+     -fx-background-radius: 20px 20px 5px 20px;
+}
+
+.text-flow-show-message-curr {
+     -fx-color: white;
+     -fx-background-color: rgb(0, 132, 255);
+     -fx-background-radius: 20px 5px 20px 20px;
+}
+
+.text-flow-show-message-between {
+      -fx-color: white;
+      -fx-background-color: rgb(0, 132, 255);
+     -fx-background-radius: 20px 5px 5px 20px;
+}
