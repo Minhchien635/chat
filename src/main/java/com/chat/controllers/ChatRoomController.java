@@ -83,12 +83,8 @@ public class ChatRoomController implements Initializable {
                                     Stage stage1 = new Stage();
                                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com.chat/fxml/nickname_form.fxml"));
                                     NicknameFormController controller = null;
-                                    try {
-                                        controller = new NicknameFormController();
-                                        controller.stageMain = stage1;
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
+                                    controller = new NicknameFormController();
+                                    controller.stageMain = stage1;
                                     fxmlLoader.setController(controller);
                                     Scene scene = null;
                                     try {

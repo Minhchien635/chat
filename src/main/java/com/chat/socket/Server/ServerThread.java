@@ -9,6 +9,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Random;
+import java.util.Vector;
 
 public class ServerThread implements Runnable {
     private final Socket socket;
@@ -94,6 +96,7 @@ public class ServerThread implements Runnable {
 
                         System.out.println("numThreadCurr: " + Server.workers.size());
                         Server.workers.remove(this);
+                        System.out.println("ten ton tai" + Server.workers.size());
                         System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Server.workers.size());
                         break;
                     }
@@ -103,20 +106,9 @@ public class ServerThread implements Runnable {
                     dataThread.myNickname = data.myNickname;
 
                     //  Chọn 1 client chưa kết nối đến client nào để gửi về client mới
-                    for (ServerThread worker : Server.workers) {
-                        if (!dataThread.myName.equals(worker.dataThread.myName) && worker.dataThread.clientNickname == "" && !dataThread.arrRefuse.contains(worker.dataThread.myName)) {
-
-                            dataThread.clientNickname = worker.dataThread.myName;
-                            dataThread.clientName = worker.dataThread.myName;
-
-                            worker.dataThread.clientNickname = dataThread.myNickname;
-                            worker.dataThread.clientName = dataThread.myName;
-
-                            data.myName = dataThread.myName;
-                            // Gửi về client hiện tại
-                            sendClientCurr(worker, dataThread, data);
-                            break;
-                        }
+                    ServerThread wk = randomClient(Server.workers, data);
+                    if (wk != null) {
+                        sendClientCurr(wk, dataThread, data);
                     }
                     continue;
                 }
@@ -275,5 +267,36 @@ public class ServerThread implements Runnable {
             }
         }
         return false;
+    }
+
+    public ServerThread randomClient(Vector<ServerThread> workers, DTO data) throws IOException {
+        Random random = new Random();
+        int size = workers.size();
+        ArrayList<Integer> flags = new ArrayList<>();
+
+        System.out.println(size);
+        if (size == 1) return null;
+
+        while (true) {
+            int i = random.nextInt(size);
+
+            if (flags.size() == size) return null;
+            if (!flags.contains(i)) {
+                flags.add(i);
+            }
+
+            ServerThread worker = workers.get(i);
+            if (!dataThread.myName.equals(worker.dataThread.myName) && worker.dataThread.clientNickname == "" && !dataThread.arrRefuse.contains(worker.dataThread.myName)) {
+
+                dataThread.clientNickname = worker.dataThread.myName;
+                dataThread.clientName = worker.dataThread.myName;
+
+                worker.dataThread.clientNickname = dataThread.myNickname;
+                worker.dataThread.clientName = dataThread.myName;
+
+                data.myName = dataThread.myName;
+                return worker;
+            }
+        }
     }
 }

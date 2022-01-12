@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
 public class NicknameFormController implements Initializable {
     public Stage stageMain;
 
-    public Client client = new Client("localhost", 12345);
+    public Client client;
 
     @FXML
     private TextField nicknameTextField;
@@ -37,11 +37,10 @@ public class NicknameFormController implements Initializable {
     @FXML
     private StackPane stackPane;
 
-    public NicknameFormController() throws IOException {
-    }
-
     @FXML
     public void onActionClick() throws IOException {
+        client = new Client("localhost", 12345);
+
         String myNickname = nicknameTextField.getText();
 
         if (myNickname.trim().isEmpty()) {
@@ -92,14 +91,11 @@ public class NicknameFormController implements Initializable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                try {
-                    client = new Client("localhost", 12345);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
                 return;
             }
 
+            // Client mới đã chấp nhận kết nối
+            // Client cũ lựa chọn chấp nhận kết nối
             if (receive.get("status").toString().equals("client ok")) {
                 Alert alert = AlertUtils.alert(Alert.AlertType.CONFIRMATION, "Chấp nhận kết nối với " + receive.get("clientNickname"));
 
@@ -115,6 +111,8 @@ public class NicknameFormController implements Initializable {
                 break;
             }
 
+            // Client cũ gửi status chấp nhận kết nối với client mới
+            // Hoàn tất kết nối
             if (receive.get("status").toString().equals("accepted")) {
                 break;
             }
