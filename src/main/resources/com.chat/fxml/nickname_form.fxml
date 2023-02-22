@@ -8,23 +8,28 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import java.lang.String?>
-<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="stackPane" xmlns="http://javafx.com/javafx/17">
     <children>
-        <VBox fx:id="vbox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="109.0" prefWidth="325.0" stylesheets="@../css/main.css">
+        <VBox fx:id="vbox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+              minWidth="-Infinity" prefHeight="109.0" prefWidth="325.0" stylesheets="@../css/main.css">
             <children>
-                <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="61.0" prefWidth="352.0" style="-fx-spacing: 5;">
+                <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="61.0" prefWidth="352.0"
+                      style="-fx-spacing: 5;">
                     <children>
-                        <Label text="Nickname:" />
-                        <TextField fx:id="nicknameTextField" prefHeight="35.0" prefWidth="222.0" promptText="\@abc..." style="-fx-background-radius: 20px;" />
+                        <Label text="Nickname:"/>
+                        <TextField fx:id="nicknameTextField" prefHeight="35.0" prefWidth="222.0" promptText="\@abc..."
+                                   style="-fx-background-radius: 20px;"/>
                     </children>
                 </HBox>
-                <Button fx:id="okButton" contentDisplay="RIGHT" defaultButton="true" mnemonicParsing="false" onAction="#onActionClick" prefHeight="31.0" prefWidth="68.0" style="-fx-background-radius: 20px;" text="Ok" textOverrun="CLIP">
+                <Button fx:id="okButton" contentDisplay="RIGHT" defaultButton="true" mnemonicParsing="false"
+                        onAction="#onActionClick" prefHeight="31.0" prefWidth="68.0"
+                        style="-fx-background-radius: 20px;" text="Ok" textOverrun="CLIP">
                     <font>
-                        <Font size="14.0" />
+                        <Font size="14.0"/>
                     </font>
                     <styleClass>
-                        <String fx:value="primary-button" />
-                        <String fx:value="action-button" />
+                        <String fx:value="primary-button"/>
+                        <String fx:value="action-button"/>
                     </styleClass>
                 </Button>
             </children>

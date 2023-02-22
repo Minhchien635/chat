@@ -35,13 +35,13 @@ public class ServerThread implements Runnable {
                 input = in.readLine();
                 System.out.println(input);
 
-                System.out.println("Tất cả thread: " + Server.workers.size());
+                System.out.println("Tất cả thread: " + Main_Server.workers.size());
 
                 // Client buộc tắt cửa sổ nickname ("force quit")
                 if (input == null) {
-                    System.out.println("numThreadCurr: " + Server.workers.size());
-                    Server.workers.remove(this);
-                    System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Server.workers.size());
+                    System.out.println("numThreadCurr: " + Main_Server.workers.size());
+                    Main_Server.workers.remove(this);
+                    System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Main_Server.workers.size());
                     break;
                 }
 
@@ -55,14 +55,14 @@ public class ServerThread implements Runnable {
 
                     // Client không chấp nhận tạo kết nối mới
                     if (data.myName == "") {
-                        System.out.println("numThreadCurr: " + Server.workers.size());
-                        Server.workers.remove(this);
-                        System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Server.workers.size());
+                        System.out.println("numThreadCurr: " + Main_Server.workers.size());
+                        Main_Server.workers.remove(this);
+                        System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Main_Server.workers.size());
                         break;
                     }
 
                     // Gửi thông tin 1 client ko kết nối về client kia
-                    for (ServerThread worker : Server.workers) {
+                    for (ServerThread worker : Main_Server.workers) {
                         if (dataThread.clientName.equals(worker.dataThread.myName)) {
                             DTO data1 = new DTO();
                             data1.myNickname = worker.dataThread.myNickname;
@@ -78,9 +78,9 @@ public class ServerThread implements Runnable {
                     }
 
                     // Hủy thread hiện tại
-                    System.out.println("numThreadCurr: " + Server.workers.size());
-                    Server.workers.remove(this);
-                    System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Server.workers.size());
+                    System.out.println("numThreadCurr: " + Main_Server.workers.size());
+                    Main_Server.workers.remove(this);
+                    System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Main_Server.workers.size());
                     break;
                 }
 
@@ -94,10 +94,10 @@ public class ServerThread implements Runnable {
                         this.out.newLine();
                         this.out.flush();
 
-                        System.out.println("numThreadCurr: " + Server.workers.size());
-                        Server.workers.remove(this);
-                        System.out.println("ten ton tai" + Server.workers.size());
-                        System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Server.workers.size());
+                        System.out.println("numThreadCurr: " + Main_Server.workers.size());
+                        Main_Server.workers.remove(this);
+                        System.out.println("ten ton tai" + Main_Server.workers.size());
+                        System.out.println("Removed thread " + this.dataThread.myName + ", numThread: " + Main_Server.workers.size());
                         break;
                     }
 
@@ -106,7 +106,7 @@ public class ServerThread implements Runnable {
                     dataThread.myNickname = data.myNickname;
 
                     //  Chọn 1 client chưa kết nối đến client nào để gửi về client mới
-                    ServerThread wk = randomClient(Server.workers, data);
+                    ServerThread wk = randomClient(Main_Server.workers, data);
                     if (wk != null) {
                         sendClientCurr(wk, dataThread, data);
                     }
@@ -116,7 +116,7 @@ public class ServerThread implements Runnable {
                 // Client mới ok
                 // Gửi đến client kia (chờ kết nối)
                 if (Objects.equals(data.status, "ok")) {
-                    for (ServerThread worker : Server.workers) {
+                    for (ServerThread worker : Main_Server.workers) {
                         if (data.clientName.equals(worker.dataThread.myName)) {
                             data.status = "client ok";
                             sendClient(worker, dataThread, data);
@@ -130,7 +130,7 @@ public class ServerThread implements Runnable {
                 // Gửi lại cho client mới
                 // Hoàn tất kết nối
                 if (Objects.equals(data.status, "client ok")) {
-                    for (ServerThread worker : Server.workers) {
+                    for (ServerThread worker : Main_Server.workers) {
                         if (data.clientName.equals(worker.dataThread.myName)) {
                             data.status = "accepted";
                             sendClient(worker, dataThread, data);
@@ -143,7 +143,7 @@ public class ServerThread implements Runnable {
                 // Truyền data
                 // Giữ status="accepted" để giữ kết nối giữa 2 client
                 if (Objects.equals(data.status, "accepted")) {
-                    for (ServerThread worker : Server.workers) {
+                    for (ServerThread worker : Main_Server.workers) {
                         if (data.clientName.equals(worker.dataThread.myName)) {
                             sendClient(worker, dataThread, data);
                             break;
@@ -157,7 +157,7 @@ public class ServerThread implements Runnable {
                 // Chọn client khác chưa kết nối với client nào để gửi qua client đã không được chấp nhận kết nối
                 if (Objects.equals(data.status, "no accepted")) {
                     // Gửi client khác về cho client đã ok nhưng client kia không chấp nhận và thêm vào danh sách từ chối
-                    for (ServerThread worker : Server.workers) {
+                    for (ServerThread worker : Main_Server.workers) {
                         if (dataThread.clientName.equals(worker.dataThread.myName)) {
 
                             worker.dataThread.clientNickname = "";
@@ -168,7 +168,7 @@ public class ServerThread implements Runnable {
                             dataThread.clientName = "";
                             dataThread.arrRefuse.add(worker.dataThread.myName);
 
-                            for (ServerThread worker1 : Server.workers) {
+                            for (ServerThread worker1 : Main_Server.workers) {
                                 if (!worker.dataThread.myName.equals(worker1.dataThread.myName) && worker1.dataThread.clientName.equals("") && !worker.dataThread.arrRefuse.contains(worker1.dataThread.myName)) {
                                     worker.dataThread.clientNickname = worker1.dataThread.myNickname;
                                     worker.dataThread.clientName = worker1.dataThread.myName;
@@ -188,7 +188,7 @@ public class ServerThread implements Runnable {
                     }
 
                     // Gửi client khác về client đã không chấp nhận và thêm vào danh sách từ chối
-                    for (ServerThread worker : Server.workers) {
+                    for (ServerThread worker : Main_Server.workers) {
                         if (dataThread.arrRefuse.contains(worker.dataThread.myName) || dataThread.myName.equals(worker.dataThread.myName) || worker.dataThread.clientName != "") {
                             continue;
                         }
@@ -261,7 +261,7 @@ public class ServerThread implements Runnable {
 
     // Kiểm tra nickname tồn tại
     public boolean checkExistedNickname(String nickname) {
-        for (ServerThread worker : Server.workers) {
+        for (ServerThread worker : Main_Server.workers) {
             if (nickname.equals(worker.dataThread.myNickname) && !nickname.equals(this.dataThread.myNickname)) {
                 return true;
             }

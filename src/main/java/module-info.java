@@ -4,7 +4,6 @@ module com.chat {
     requires json.simple;
     requires lombok;
 
-
     opens com.chat to javafx.fxml;
     exports com.chat;
     exports com.chat.socket.Client;
