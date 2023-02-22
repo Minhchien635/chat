@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ReceiveMessage implements Runnable {
-    private BufferedReader in;
-    private Socket socket;
+    private final BufferedReader in;
+    private final Socket socket;
 
     public ReceiveMessage(Socket s, BufferedReader i) {
         this.socket = s;

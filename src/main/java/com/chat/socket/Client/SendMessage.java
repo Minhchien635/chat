@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class SendMessage implements Runnable {
-    private BufferedWriter out;
-    private Socket socket;
+    private final BufferedWriter out;
+    private final Socket socket;
 
     public SendMessage(Socket s, BufferedWriter o) {
         this.socket = s;
